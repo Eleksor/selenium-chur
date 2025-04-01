@@ -163,4 +163,53 @@ public class ChaptersTest {
         assertEquals("Hello Shadow DOM", textElementFromShadow.getText());
     }
 
+    @Test
+    void defaultCookiePageTest() {
+        String expectedCookiesList = "username=John Doe\ndate=10/07/2018";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.findElement(By.id("refresh-cookies")).click();
+        String cookiesList = driver.findElement(By.id("cookies-list")).getText();
+
+        assertEquals(expectedCookiesList, cookiesList);
+    }
+
+    @Test
+    void addedCookiePageTest() throws InterruptedException {
+        String expectedCookiesList = "username=John Doe\ndate=10/07/2018\npsina=sutulaya";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.manage().addCookie(new Cookie("psina", "sutulaya"));
+        driver.findElement(By.id("refresh-cookies")).click();
+        String cookiesList = driver.findElement(By.id("cookies-list")).getText();
+
+        assertEquals(expectedCookiesList, cookiesList);
+    }
+
+    @Test
+    void deleteCookiePageTest() throws InterruptedException {
+        String expectedCookiesList = "";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.manage().deleteAllCookies();
+        driver.findElement(By.id("refresh-cookies")).click();
+        String cookiesList = driver.findElement(By.id("cookies-list")).getText();
+
+        assertEquals(expectedCookiesList, cookiesList);
+    }
+
+    @Test
+    void framePageTest() {
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[5]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.switchTo().frame("frame-body");
+    }
+
 }
