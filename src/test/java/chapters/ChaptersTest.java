@@ -5,12 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -18,24 +18,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ChaptersTest {
 
     WebDriver driver;
     private static final String BASE_URL = "https://bonigarcia.dev/selenium-webdriver-java/";
     static int parametrizedCount = 1;
+    Actions action;
+    WebDriverWait wait2;
+    WebDriverWait wait5;
+    WebDriverWait wait10;
+    Wait<WebDriver> waitFluent;
 
     @BeforeEach
     void setup() {
 
         driver = new ChromeDriver();
-        Actions action = new Actions(driver);
+        action = new Actions(driver);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
         driver.manage().window().maximize();
         driver.get(BASE_URL);
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait2 = new WebDriverWait(driver, Duration.ofSeconds(2));
+        wait5 = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait10 = new WebDriverWait(driver, Duration.ofSeconds(10));
+        waitFluent = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(10))
+                .pollingEvery(Duration.ofSeconds(1))
+                .ignoring(NoSuchElementException.class);
     }
     @AfterEach
     void tearDown() {
@@ -107,11 +117,50 @@ public class ChaptersTest {
     }
 
     @Test
-    void longPageTest() throws InterruptedException {
+    void longPageTest() {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[1]";
         driver.findElement(By.xpath(nextBtnLocator)).click();
-        Thread.sleep(1000);
+        action
+                .sendKeys(Keys.SPACE)
+                .sendKeys(Keys.SPACE)
+                .sendKeys(Keys.SPACE)
+                .perform();
+
+        wait2.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//footer")));
+
+        assertTrue(driver.findElement(By.xpath("//footer")).isDisplayed());
+    }
+
+    @Test
+    void infinitePageTest() {
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[2]";
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        action
+                .sendKeys(Keys.SPACE)
+                .sendKeys(Keys.SPACE)
+                .sendKeys(Keys.SPACE)
+                .perform();
+
+        //waitFluent.until(ExpectedConditions.presenceOfElementLocated(By.className("text-muted")));
+
+        assertThrows(ElementClickInterceptedException.class, () -> driver.findElement(By.className("text-muted")).click());
+    }
+
+    @Test
+    void shadowDOMPageTest() {
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[3]";
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+
+        assertThrows(NoSuchElementException.class, () -> driver.findElement(By.cssSelector("p")));
+
+        WebElement shadowContent = driver.findElement(By.id("content"));
+        SearchContext shadowRoot = shadowContent.getShadowRoot();
+        WebElement textElementFromShadow = shadowRoot.findElement(By.cssSelector("p"));
+
+        assertEquals("Hello Shadow DOM", textElementFromShadow.getText());
     }
 
 }
