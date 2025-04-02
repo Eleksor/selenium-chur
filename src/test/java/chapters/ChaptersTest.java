@@ -205,11 +205,70 @@ public class ChaptersTest {
 
     @Test
     void framePageTest() {
+        String expectedParagraph = "Nibh netus aliquet nam mattis vestibulum interdum euismod suspendisse rutrum ullamcorper venenatis, vehicula curabitur viverra habitasse leo vulputate eget malesuada ad tincidunt, donec posuere bibendum varius sollicitudin aenean accumsan lacinia consequat mi. Litora vel turpis luctus nec quisque hendrerit morbi maecenas, netus conubia feugiat orci fringilla suspendisse iaculis erat, semper posuere integer et senectus justo curabitur. Fringilla ut taciti mollis morbi blandit dictumst odio ultrices, parturient feugiat vel porttitor convallis eros pellentesque pretium risus, varius accumsan litora habitasse cursus pharetra commodo.";
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[5]";
 
         driver.findElement(By.xpath(nextBtnLocator)).click();
         driver.switchTo().frame("frame-body");
+        String actualParagraph = driver.findElement(By.xpath("//p[2]")).getText();
+
+        assertEquals(expectedParagraph, actualParagraph);
+    }
+
+    @Test
+    void frameNegativePageTest() {
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[5]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+
+        assertThrows(NoSuchElementException.class, () -> driver.findElement(By.xpath("//p[2]")));
+    }
+
+    @Test
+    void iFramePageTest() {
+        String expectedParagraph = "Varius bibendum volutpat porttitor habitant quis quam vehicula cras, " +
+                "facilisi natoque ornare viverra vestibulum aliquet aliquam. Libero class porttitor hac iaculis " +
+                "mauris ligula mattis turpis, tincidunt leo vivamus velit massa praesent ante, torquent eleifend " +
+                "ullamcorper scelerisque nec dictum imperdiet. Tincidunt purus nostra felis fusce varius at " +
+                "pellentesque, sociosqu accumsan phasellus interdum posuere eros, pharetra velit diam quisque " +
+                "porttitor scelerisque.";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[6]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.switchTo().frame("my-iframe");
+        String actualParagraph = driver.findElement(By.xpath("//p[3]")).getText();
+
+        assertEquals(expectedParagraph, actualParagraph);
+    }
+
+    @Test
+    void alertPageTest() {
+        String expectedTypedText = "A corn is a queen of fields!";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[7]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.findElement(By.id("my-alert")).click();
+        driver.switchTo().alert().accept();
+
+        driver.findElement(By.id("my-confirm")).click();
+        driver.switchTo().alert().accept();
+        driver.findElement(By.id("my-confirm")).click();
+        driver.switchTo().alert().dismiss();
+
+        driver.findElement(By.id("my-prompt")).click();
+        driver.switchTo().alert().sendKeys(expectedTypedText);
+        driver.switchTo().alert().accept();
+        String actualDisplayedText = driver.findElement(By.id("prompt-text")).getText();
+
+        driver.findElement(By.id("my-modal")).click();
+        driver.findElement(By.xpath("//button[@class='btn btn-primary model-button']")).click();
+
+        assertEquals("You typed: " + expectedTypedText, actualDisplayedText);
+        assertEquals("You chose: Save changes", driver.findElement(By.id("modal-text")).getText());
     }
 
 }
