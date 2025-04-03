@@ -5,12 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -18,24 +18,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ChaptersTest {
 
     WebDriver driver;
     private static final String BASE_URL = "https://bonigarcia.dev/selenium-webdriver-java/";
     static int parametrizedCount = 1;
+    Actions action;
+    WebDriverWait wait2;
+    WebDriverWait wait5;
+    WebDriverWait wait10;
+    Wait<WebDriver> waitFluent;
 
     @BeforeEach
     void setup() {
 
         driver = new ChromeDriver();
-        Actions action = new Actions(driver);
+        action = new Actions(driver);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
         driver.manage().window().maximize();
         driver.get(BASE_URL);
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait2 = new WebDriverWait(driver, Duration.ofSeconds(2));
+        wait5 = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait10 = new WebDriverWait(driver, Duration.ofSeconds(10));
+        waitFluent = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(10))
+                .pollingEvery(Duration.ofSeconds(1))
+                .ignoring(NoSuchElementException.class);
     }
     @AfterEach
     void tearDown() {
@@ -107,11 +117,158 @@ public class ChaptersTest {
     }
 
     @Test
-    void longPageTest() throws InterruptedException {
+    void longPageTest() {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[1]";
         driver.findElement(By.xpath(nextBtnLocator)).click();
-        Thread.sleep(1000);
+        action
+                .sendKeys(Keys.SPACE)
+                .sendKeys(Keys.SPACE)
+                .sendKeys(Keys.SPACE)
+                .perform();
+
+        wait2.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//footer")));
+
+        assertTrue(driver.findElement(By.xpath("//footer")).isDisplayed());
+    }
+
+    @Test
+    void infinitePageTest() {
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[2]";
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        action
+                .sendKeys(Keys.SPACE)
+                .sendKeys(Keys.SPACE)
+                .sendKeys(Keys.SPACE)
+                .perform();
+
+        //waitFluent.until(ExpectedConditions.presenceOfElementLocated(By.className("text-muted")));
+
+        assertThrows(ElementClickInterceptedException.class, () -> driver.findElement(By.className("text-muted")).click());
+    }
+
+    @Test
+    void shadowDOMPageTest() {
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[3]";
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+
+        assertThrows(NoSuchElementException.class, () -> driver.findElement(By.cssSelector("p")));
+
+        WebElement shadowContent = driver.findElement(By.id("content"));
+        SearchContext shadowRoot = shadowContent.getShadowRoot();
+        WebElement textElementFromShadow = shadowRoot.findElement(By.cssSelector("p"));
+
+        assertEquals("Hello Shadow DOM", textElementFromShadow.getText());
+    }
+
+    @Test
+    void defaultCookiePageTest() {
+        String expectedCookiesList = "username=John Doe\ndate=10/07/2018";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.findElement(By.id("refresh-cookies")).click();
+        String cookiesList = driver.findElement(By.id("cookies-list")).getText();
+
+        assertEquals(expectedCookiesList, cookiesList);
+    }
+
+    @Test
+    void addedCookiePageTest() throws InterruptedException {
+        String expectedCookiesList = "username=John Doe\ndate=10/07/2018\npsina=sutulaya";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.manage().addCookie(new Cookie("psina", "sutulaya"));
+        driver.findElement(By.id("refresh-cookies")).click();
+        String cookiesList = driver.findElement(By.id("cookies-list")).getText();
+
+        assertEquals(expectedCookiesList, cookiesList);
+    }
+
+    @Test
+    void deleteCookiePageTest() throws InterruptedException {
+        String expectedCookiesList = "";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.manage().deleteAllCookies();
+        driver.findElement(By.id("refresh-cookies")).click();
+        String cookiesList = driver.findElement(By.id("cookies-list")).getText();
+
+        assertEquals(expectedCookiesList, cookiesList);
+    }
+
+    @Test
+    void framePageTest() {
+        String expectedParagraph = "Nibh netus aliquet nam mattis vestibulum interdum euismod suspendisse rutrum ullamcorper venenatis, vehicula curabitur viverra habitasse leo vulputate eget malesuada ad tincidunt, donec posuere bibendum varius sollicitudin aenean accumsan lacinia consequat mi. Litora vel turpis luctus nec quisque hendrerit morbi maecenas, netus conubia feugiat orci fringilla suspendisse iaculis erat, semper posuere integer et senectus justo curabitur. Fringilla ut taciti mollis morbi blandit dictumst odio ultrices, parturient feugiat vel porttitor convallis eros pellentesque pretium risus, varius accumsan litora habitasse cursus pharetra commodo.";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[5]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.switchTo().frame("frame-body");
+        String actualParagraph = driver.findElement(By.xpath("//p[2]")).getText();
+
+        assertEquals(expectedParagraph, actualParagraph);
+    }
+
+    @Test
+    void frameNegativePageTest() {
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[5]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+
+        assertThrows(NoSuchElementException.class, () -> driver.findElement(By.xpath("//p[2]")));
+    }
+
+    @Test
+    void iFramePageTest() {
+        String expectedParagraph = "Varius bibendum volutpat porttitor habitant quis quam vehicula cras, " +
+                "facilisi natoque ornare viverra vestibulum aliquet aliquam. Libero class porttitor hac iaculis " +
+                "mauris ligula mattis turpis, tincidunt leo vivamus velit massa praesent ante, torquent eleifend " +
+                "ullamcorper scelerisque nec dictum imperdiet. Tincidunt purus nostra felis fusce varius at " +
+                "pellentesque, sociosqu accumsan phasellus interdum posuere eros, pharetra velit diam quisque " +
+                "porttitor scelerisque.";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[6]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.switchTo().frame("my-iframe");
+        String actualParagraph = driver.findElement(By.xpath("//p[3]")).getText();
+
+        assertEquals(expectedParagraph, actualParagraph);
+    }
+
+    @Test
+    void alertPageTest() {
+        String expectedTypedText = "A corn is a queen of fields!";
+        String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
+                "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[7]";
+
+        driver.findElement(By.xpath(nextBtnLocator)).click();
+        driver.findElement(By.id("my-alert")).click();
+        driver.switchTo().alert().accept();
+
+        driver.findElement(By.id("my-confirm")).click();
+        driver.switchTo().alert().accept();
+        driver.findElement(By.id("my-confirm")).click();
+        driver.switchTo().alert().dismiss();
+
+        driver.findElement(By.id("my-prompt")).click();
+        driver.switchTo().alert().sendKeys(expectedTypedText);
+        driver.switchTo().alert().accept();
+        String actualDisplayedText = driver.findElement(By.id("prompt-text")).getText();
+
+        driver.findElement(By.id("my-modal")).click();
+        driver.findElement(By.xpath("//button[@class='btn btn-primary model-button']")).click();
+
+        assertEquals("You typed: " + expectedTypedText, actualDisplayedText);
+        assertEquals("You chose: Save changes", driver.findElement(By.id("modal-text")).getText());
     }
 
 }
