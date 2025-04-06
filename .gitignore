@@ -41,3 +41,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+# Исключения(например, для шаблонов property файлов)
+!src/test/resources/TEMPLATE.properties
