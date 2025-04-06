@@ -25,7 +25,7 @@ public class ChaptersTest {
 
     TestConfig testConfig = new TestConfig();
     WebDriver driver;
-    private static final String BASE_URL = "https://bonigarcia.dev/selenium-webdriver-java/";
+    String baseUrl = testConfig.getBaseUrl();
     static int parametrizedCount = 1;
     Actions action;
     WebDriverWait wait2;
@@ -40,7 +40,7 @@ public class ChaptersTest {
         action = new Actions(driver);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
         driver.manage().window().maximize();
-        driver.get(testConfig.getBaseUrl());
+        driver.get(baseUrl);
         wait2 = new WebDriverWait(driver, Duration.ofSeconds(2));
         wait5 = new WebDriverWait(driver, Duration.ofSeconds(5));
         wait10 = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -68,7 +68,7 @@ public class ChaptersTest {
         for (Map.Entry<String, String> entry : elementUrlPair.entrySet()) {
             driver.findElement(By.xpath("//a[text() = '" + entry.getValue() + "']")).click();
 
-            assertEquals(BASE_URL + entry.getKey(), driver.getCurrentUrl());
+            assertEquals(baseUrl + entry.getKey(), driver.getCurrentUrl());
             if (entry.getValue().equals("Navigation")) {
                 assertEquals(entry.getValue() + " example",
                         driver.findElement(By.xpath("//h1[@class='display-6']")).getText());
@@ -113,7 +113,7 @@ public class ChaptersTest {
             assertEquals(nameHead, actualHead);
         }
 
-        assertEquals(BASE_URL + urlButt, actualUrl);
+        assertEquals(baseUrl + urlButt, actualUrl);
         assertEquals(nameButt, actualBtnName);
     }
 

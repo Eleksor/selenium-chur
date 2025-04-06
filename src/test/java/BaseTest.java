@@ -1,3 +1,4 @@
+import config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class BaseTest {
 
     WebDriver driver;
-    private static final String BASE_URL = "https://bonigarcia.dev/selenium-webdriver-java";
+    String baseUrl = new TestConfig().getBaseUrl();
 
     @BeforeEach
     void setup() {
@@ -28,7 +29,7 @@ public class BaseTest {
 
     @Test
     void firstTest() {
-        driver.get(BASE_URL);
+        driver.get(baseUrl);
         List<WebElement> list = driver.findElements(By.xpath("//div[@class='card-body']/h5[contains(@class, 'card-title') and  text() = 'Chapter 3. WebDriver Fundamentals']/../a"));
 
         for (WebElement webElement : list) {
@@ -38,7 +39,7 @@ public class BaseTest {
 
     @Test
     void secondTest() {
-        driver.get(BASE_URL);
+        driver.get(baseUrl);
         String title = driver.getTitle();
 
         assertEquals("Hands-On Selenium WebDriver with Java", title);
@@ -46,7 +47,7 @@ public class BaseTest {
 
     @Test
     void thirdTest() {
-        driver.get(BASE_URL);
+        driver.get(baseUrl);
         driver.findElement(By.xpath("//div[@class='card-body']/a[1]")).click();
         String webFormUrl = "/web-form.html";
         String titleOfChapter =  driver.findElement(By.xpath("//h1[@class = 'display-6']")).getText();
@@ -54,6 +55,6 @@ public class BaseTest {
         System.out.println("=========================" + titleOfChapter);
 
         assertEquals("Web form", titleOfChapter);
-        assertEquals(BASE_URL + webFormUrl, currentUrl);
+        assertEquals(baseUrl + webFormUrl, currentUrl);
     }
 }

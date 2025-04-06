@@ -18,4 +18,5 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperties(System.getProperties())
+    //systemProperty "baseUrl", System.getProperty("baseUrl", "https://bonigarcia.dev/selenium-webdriver-java2/")
 }
