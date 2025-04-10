@@ -1,5 +1,6 @@
 package chapters;
 
+import config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ChaptersTest {
 
+    TestConfig testConfig = new TestConfig();
     WebDriver driver;
-    private static final String BASE_URL = "https://bonigarcia.dev/selenium-webdriver-java/";
+    String baseUrl = testConfig.getBaseUrl();
     static int parametrizedCount = 1;
     Actions action;
     WebDriverWait wait2;
@@ -38,7 +40,7 @@ public class ChaptersTest {
         action = new Actions(driver);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
         driver.manage().window().maximize();
-        driver.get(BASE_URL);
+        driver.get(baseUrl);
         wait2 = new WebDriverWait(driver, Duration.ofSeconds(2));
         wait5 = new WebDriverWait(driver, Duration.ofSeconds(5));
         wait10 = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -66,7 +68,7 @@ public class ChaptersTest {
         for (Map.Entry<String, String> entry : elementUrlPair.entrySet()) {
             driver.findElement(By.xpath("//a[text() = '" + entry.getValue() + "']")).click();
 
-            assertEquals(BASE_URL + entry.getKey(), driver.getCurrentUrl());
+            assertEquals(baseUrl + entry.getKey(), driver.getCurrentUrl());
             if (entry.getValue().equals("Navigation")) {
                 assertEquals(entry.getValue() + " example",
                         driver.findElement(By.xpath("//h1[@class='display-6']")).getText());
@@ -96,7 +98,6 @@ public class ChaptersTest {
         parametrizedCount++;
 
         WebElement currentElement = driver.findElement(By.xpath(nextBtnLocator));
-        String actualBtnUrl = currentElement.getDomAttribute("href");
         String actualBtnName = currentElement.getText();
 
         driver.findElement(By.xpath(nextBtnLocator)).click();
@@ -112,7 +113,7 @@ public class ChaptersTest {
             assertEquals(nameHead, actualHead);
         }
 
-        assertEquals(BASE_URL + urlButt, actualUrl);
+        assertEquals(baseUrl + urlButt, actualUrl);
         assertEquals(nameButt, actualBtnName);
     }
 
@@ -176,7 +177,7 @@ public class ChaptersTest {
     }
 
     @Test
-    void addedCookiePageTest() throws InterruptedException {
+    void addedCookiePageTest() {
         String expectedCookiesList = "username=John Doe\ndate=10/07/2018\npsina=sutulaya";
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
@@ -190,7 +191,7 @@ public class ChaptersTest {
     }
 
     @Test
-    void deleteCookiePageTest() throws InterruptedException {
+    void deleteCookiePageTest() {
         String expectedCookiesList = "";
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
