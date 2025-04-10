@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TestConfig {
     String env;
+    String username;
+    String password;
     Properties properties;
 
     public TestConfig() {
@@ -20,6 +22,24 @@ public class TestConfig {
         assertNotNull(baseUrl, String.format("BaseUrl is not found in %s.properties", env));
         System.out.println("Base URL: " + baseUrl);
         return baseUrl;
+    }
+
+    public String getUsername() {
+        return getFieldByName("username");
+    }
+
+    public String getPassword() {
+        return getFieldByName("password");
+    }
+
+    public String getFieldByName(String fieldName) {
+        String field = properties.getProperty(fieldName);
+        if (field == null || field.isEmpty()) {
+            field = System.getProperty(fieldName, field);
+        }
+        assertNotNull(field, String.format("%s is not in %s.properties and not set by system properties", fieldName, env));
+        //System.out.printf("%s: %s%n", fieldName, field);
+        return field;
     }
 
     private Properties getPropertiesByEnv(String env) {
