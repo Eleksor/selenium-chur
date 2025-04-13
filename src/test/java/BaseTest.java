@@ -1,4 +1,6 @@
 import config.TestConfig;
+import config.TestPropertiesConfig;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ public class BaseTest {
     WebDriver driver;
     TestConfig testConfig = new TestConfig();
     String baseUrl = testConfig.getBaseUrl();
+    TestPropertiesConfig config = ConfigFactory.create(TestPropertiesConfig.class, System.getProperties());
 
     @BeforeEach
     void setup() {
@@ -56,7 +59,7 @@ public class BaseTest {
     void thirdTest() {
         driver.get(baseUrl);
         driver.findElement(By.xpath("//div[@class='card-body']/a[1]")).click();
-        String webFormUrl = "/web-form.html";
+        String webFormUrl = "web-form.html";
         String titleOfChapter =  driver.findElement(By.xpath("//h1[@class = 'display-6']")).getText();
         String currentUrl = driver.getCurrentUrl();
         System.out.println("=========================" + titleOfChapter);
@@ -67,6 +70,12 @@ public class BaseTest {
 
     @Test
     void signInTest() {
+        if(config.isRemote()) {
+            System.out.println("Selenoid run with id: " + 123);
+        } else {
+            System.out.println("Local run");
+        }
+
         driver.get(baseUrl);
         driver.findElement(By.xpath("//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and  text() = 'Chapter 7. The Page Object Model (POM)']/../a[1]")).click();
