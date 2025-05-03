@@ -1,57 +1,26 @@
 package chapters;
 
-import config.TestConfig;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import base.BaseTest;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ChaptersTest {
+public class ChaptersTest extends BaseTest {
 
-    TestConfig testConfig = new TestConfig();
-    WebDriver driver;
-    String baseUrl = testConfig.getBaseUrl();
     static int parametrizedCount = 1;
-    Actions action;
-    WebDriverWait wait2;
-    WebDriverWait wait5;
-    WebDriverWait wait10;
-    Wait<WebDriver> waitFluent;
 
     @BeforeEach
-    void setup() {
-
-        driver = new ChromeDriver();
-        action = new Actions(driver);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        driver.manage().window().maximize();
+    void setup2() {
         driver.get(baseUrl);
-        wait2 = new WebDriverWait(driver, Duration.ofSeconds(2));
-        wait5 = new WebDriverWait(driver, Duration.ofSeconds(5));
-        wait10 = new WebDriverWait(driver, Duration.ofSeconds(10));
-        waitFluent = new FluentWait<>(driver)
-                .withTimeout(Duration.ofSeconds(10))
-                .pollingEvery(Duration.ofSeconds(1))
-                .ignoring(NoSuchElementException.class);
-    }
-    @AfterEach
-    void tearDown() {
-        driver.quit();
     }
 
     @Test
@@ -122,13 +91,13 @@ public class ChaptersTest {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[1]";
         driver.findElement(By.xpath(nextBtnLocator)).click();
-        action
+        this.action
                 .sendKeys(Keys.SPACE)
                 .sendKeys(Keys.SPACE)
                 .sendKeys(Keys.SPACE)
                 .perform();
 
-        wait2.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//footer")));
+        this.wait2.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//footer")));
 
         assertTrue(driver.findElement(By.xpath("//footer")).isDisplayed());
     }

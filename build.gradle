@@ -12,7 +12,9 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation("org.seleniumhq.selenium:selenium-java:4.30.0")
+    implementation("org.seleniumhq.selenium:selenium-java:4.31.0")
+    testImplementation("org.assertj:assertj-core:3.27.3")
+    implementation("io.qameta.allure:allure-junit5:2.29.1")
     implementation("org.aeonbits.owner:owner:1.0.12")
 }
 
