@@ -21,22 +21,30 @@ public class NavigationPageTest extends BaseTest {
 
     @Test
     void openNavigationPageTest() {
-        //homePage.open();
         NavigationPage navigationPage = homePage.openNavigationPage();
+//        try {
+//            sleep(2000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        String currentUrl = navigationPage.getCurrentUrl();
+        String title = navigationPage.getTitle().getText();
+        String navigationUrl = navigationPage.getUrl();
+
+        navigationPage.clickNextButton();
+        navigationPage.clickNextButton();
+
         try {
             sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        String currentUrl = navigationPage.getCurrentUrl();
-        WebElement title = navigationPage.getTitle();
-        String navigationUrl = navigationPage.getUrl();
-
         System.out.println(navigationPage.getTitle() + ": " + navigationPage.getCurrentUrl());
 
         assertEquals(BASE_URL + navigationUrl, currentUrl);
-        assertEquals("Navigation example", title.getText());
+        assertEquals("Navigation example", title);
     }
     //40 минута
 }
