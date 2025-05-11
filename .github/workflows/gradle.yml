@@ -38,6 +38,8 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle Wrapper
+      env:
+        SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
       run: ./gradlew test
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
@@ -93,5 +95,11 @@ jobs:
         PUBLISH_BRANCH: gh-pages
         PUBLISH_DIR: allure-history
 
+    services:
+      selenium:
+        image: selenium/standalone-chrome:latest
+        options: --shm-size 2g
+        ports:
+          - 4444:4444
 
 
