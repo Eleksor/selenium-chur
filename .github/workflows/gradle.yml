@@ -8,10 +8,6 @@
 name: UI tests
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
   workflow_dispatch:
 
 
@@ -22,6 +18,13 @@ jobs:
       contents: write
       pages: write
 
+    services:
+
+      selenium:
+        image: selenium/standalone-chrome:latest
+        options: --shm-size 2g
+        ports:
+          - 4444:4444
 
     steps:
     - uses: actions/checkout@v4
@@ -56,8 +59,9 @@ jobs:
     #   run: gradle build
 
   dependency-submission:
-
     runs-on: ubuntu-latest
+
+
     permissions:
       contents: write
 
@@ -96,12 +100,3 @@ jobs:
         PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PUBLISH_BRANCH: gh-pages
         PUBLISH_DIR: allure-history
-
-    services:
-      selenium:
-        image: selenium/standalone-chrome:latest
-        options: --shm-size 2g
-        ports:
-          - 4444:4444
-
-
