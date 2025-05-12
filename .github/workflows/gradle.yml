@@ -47,6 +47,29 @@ jobs:
         SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
       run: ./gradlew test
 
+    - name: Copy History
+      uses: actions/checkout@v2
+      if: always()
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Build Report
+      uses: simple-elf/allure-report-action@v1.10
+      if: always()
+      with:
+        allure_results: build/allure-results
+        allure_history: allure-history
+        keep_reports: 20
+
+    - name: Publish Report
+      if: always()
+      uses: peaceiris/actions-gh-pages@v2
+      env:
+        PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: allure-history
+
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
     #
