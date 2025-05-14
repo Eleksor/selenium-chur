@@ -1,6 +1,7 @@
 package base;
 
 import config.TestConfig;
+import io.qameta.allure.Allure;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.NoSuchElementException;
@@ -52,6 +53,7 @@ public class BaseTest {
     private void initDriver() {
         String remoteUrl = System.getenv("SELENIUM_REMOTE_URL");
         System.out.println("SELENIUM_REMOTE_URL = " + remoteUrl);
+        //Allure.addAttachment("remote", remoteUrl);
         if (remoteUrl != null) {
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--headless");  // Add headless mode
