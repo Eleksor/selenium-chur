@@ -52,6 +52,8 @@ public class BaseTest {
 
     private void initDriver() {
         String remoteUrl = System.getenv("SELENIUM_REMOTE_URL");
+        Allure.addAttachment("remote", remoteUrl);
+        if (remoteUrl != null || !remoteUrl.isEmpty()) {
         System.out.println("SELENIUM_REMOTE_URL = " + remoteUrl);
         //Allure.addAttachment("remote", remoteUrl);
         if (remoteUrl != null) {
