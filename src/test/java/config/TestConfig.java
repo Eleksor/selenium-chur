@@ -17,11 +17,11 @@ public class TestConfig {
     }
 
     public String getBaseUrl() {
-        String baseUrl = properties.getProperty("baseUrl");
-        baseUrl = System.getProperty("baseUrl", baseUrl);
-        assertNotNull(baseUrl, String.format("BaseUrl is not found in %s.properties", env));
-        System.out.println("Base URL: " + baseUrl);
-        return baseUrl;
+        String uiBaseUrl = properties.getProperty("uiBaseUrl");
+        uiBaseUrl = System.getProperty("uiBaseUrl", uiBaseUrl);
+        assertNotNull(uiBaseUrl, String.format("BaseUrl is not found in %s.properties", env));
+        System.out.println("Base URL: " + uiBaseUrl);
+        return uiBaseUrl;
     }
 
     public String getUsername() {

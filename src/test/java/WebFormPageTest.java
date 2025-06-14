@@ -9,7 +9,7 @@ public class WebFormPageTest extends BaseTest {
 
     @BeforeEach
     void setup2() {
-        homePage = new HomePage(driver);
+        homePage = new HomePage(getDriver());
     }
 
     @Test
