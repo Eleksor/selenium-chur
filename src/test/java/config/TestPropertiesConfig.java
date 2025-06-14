@@ -8,9 +8,12 @@ import org.aeonbits.owner.Config;
         "classpath:default.properties"
 })
 public interface TestPropertiesConfig extends Config {
-    @Key("baseUrl")
+    @Key("uiBaseUrl")
     @DefaultValue(Constants.BASE_URL)
-    String getBaseUrl();
+    String getUiBaseUrl();
+
+    @Key("apiBaseUrl")
+    String getApiBaseUrl();
 
     @Key("username")
     String getUsername();
@@ -18,6 +21,6 @@ public interface TestPropertiesConfig extends Config {
     @Key("password")
     String getPassword();
 
-    @Key("isRemote")
-    boolean isRemote();
+    @Key("selenium.remote.url")
+    String getSeleniumRemoteUrl();
 }

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class LoginPageTestFluent extends BaseTest {
     @Test
     void successfulLoginTest() {
-        String successMessage = new HomePageFluent(driver)
+        String successMessage = new HomePageFluent(getDriver())
                 .openLoginPage()
                 .inputUsername("user")
                 .inputPassword("user")
@@ -22,12 +22,12 @@ public class LoginPageTestFluent extends BaseTest {
 
     @Test
     void returnOnHomePageAfterSuccessfulLoginTest() {
-        LoginFormSubmitPageFluent loginFormSubmitPageFluent = new HomePageFluent(driver)
+        LoginFormSubmitPageFluent loginFormSubmitPageFluent = new HomePageFluent(getDriver())
                 .openLoginPage()
                 .inputUsername("resu")
                 .inputPassword("resu")
                 .clickSubmitButton();
 
-        assertTrue(driver.findElement(By.id("invalid")).isDisplayed());
+        assertTrue(getDriver().findElement(By.id("invalid")).isDisplayed());
     }
 }

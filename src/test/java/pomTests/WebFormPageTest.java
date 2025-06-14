@@ -6,7 +6,7 @@ import pom.WebFormPage;
 
 public class WebFormPageTest extends BaseTest {
 
-    WebFormPage webFormPage = new WebFormPage(this.driver);
+    WebFormPage webFormPage = new WebFormPage(this.getDriver());
 
     @Test
     void openWebFormTest() {

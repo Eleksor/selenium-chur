@@ -27,20 +27,20 @@ public class FileUploadTest extends BaseTest {
         }
 
         // Открываем страницу с формой загрузки файла
-        driver.get("https://bonigarcia.dev/selenium-webdriver-java/web-form.html");
+        getDriver().get("https://bonigarcia.dev/selenium-webdriver-java/web-form.html");
 
         // Находим элемент <input type="file"> по его атрибуту name
-        WebElement fileInput = driver.findElement(By.xpath("//input[@name='my-file']"));
+        WebElement fileInput = getDriver().findElement(By.xpath("//input[@name='my-file']"));
 
         // Загружаем файл, указывая абсолютный путь к файлу
         fileInput.sendKeys(new File(filePath).getAbsolutePath());
 
         // Далее можно продолжить взаимодействие с элементами на странице или выполнять другие действия
         Thread.sleep(5000);
-        WebElement submit = driver.findElement(By.xpath("//button[text()='Submit']"));
+        WebElement submit = getDriver().findElement(By.xpath("//button[text()='Submit']"));
         submit.click();
         Thread.sleep(5000);
 
-        assertThat(driver.getCurrentUrl()).contains(fileName);
+        assertThat(getDriver().getCurrentUrl()).contains(fileName);
     }
 }

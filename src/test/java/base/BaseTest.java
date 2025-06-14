@@ -1,9 +1,12 @@
 package base;
 
 import config.TestConfig;
+import config.TestPropertiesConfig;
 import io.qameta.allure.Allure;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -13,14 +16,16 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import utils.AfterTestExtension;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
 
+@ExtendWith(AfterTestExtension.class)
 public class BaseTest {
-    protected WebDriver driver;
+
     protected Actions action;
     protected WebDriverWait wait2;
     protected WebDriverWait wait5;
@@ -29,9 +34,17 @@ public class BaseTest {
     protected TestConfig testConfig = new TestConfig();
     protected String baseUrl = testConfig.getBaseUrl();
 
+    TestPropertiesConfig configProperties = ConfigFactory.create(TestPropertiesConfig.class, System.getProperties());
+    static WebDriver driver;
+    WebDriverWait longWait;
+
+    public static WebDriver getDriver() {
+        return driver;
+    }
+
     @BeforeEach
     void setup() {
-        initDriver();
+        driver = initDriver();
         action = new Actions(driver);
         wait2 = new WebDriverWait(driver, Duration.ofSeconds(2));
         wait5 = new WebDriverWait(driver, Duration.ofSeconds(5));
@@ -41,7 +54,6 @@ public class BaseTest {
                 .pollingEvery(Duration.ofSeconds(1))
                 .ignoring(NoSuchElementException.class);
         //driver.get(baseUrl);
-        driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
     }
 
@@ -50,12 +62,12 @@ public class BaseTest {
         driver.quit();
     }
 
-    private void initDriver() {
+    private WebDriver initDriver() {
         String remoteUrl = System.getenv("SELENIUM_REMOTE_URL");
-        Allure.addAttachment("remote", remoteUrl);
+        //Allure.addAttachment("remote", remoteUrl);
         if (remoteUrl == null || remoteUrl.isEmpty()) {
+            remoteUrl = configProperties.getSeleniumRemoteUrl();
             System.out.println("SELENIUM_REMOTE_URL = " + remoteUrl);
-            //Allure.addAttachment("remote", remoteUrl);
             if (remoteUrl != null) {
                 Allure.addAttachment("RemoteUrl", remoteUrl);
                 ChromeOptions options = new ChromeOptions();
@@ -70,9 +82,11 @@ public class BaseTest {
                     throw new RuntimeException("Malformed URL for Selenium Remote WebDriver", e);
                 }
             } else {
+                Allure.addAttachment("Local run", "No remote driver");
                 driver = new ChromeDriver();
             }
         }
-
+        driver.manage().window().maximize();
+        return driver;
     }
 }

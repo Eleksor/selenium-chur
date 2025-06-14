@@ -20,7 +20,7 @@ public class ChaptersTest extends BaseTest {
 
     @BeforeEach
     void setup2() {
-        driver.get(baseUrl);
+        getDriver().get(baseUrl);
     }
 
     @Test
@@ -28,25 +28,25 @@ public class ChaptersTest extends BaseTest {
         String chapterContent = "//div[@class='card-body']/h5[contains(@class, 'card-title') and  " +
                 "text() = 'Chapter 3. WebDriver Fundamentals']/../a";
         Map<String, String> elementUrlPair = new HashMap<>();
-        List<WebElement> list = driver.findElements(By.xpath(chapterContent));
+        List<WebElement> list = getDriver().findElements(By.xpath(chapterContent));
 
         for (WebElement webElement : list) {
             elementUrlPair.put(webElement.getDomAttribute("href"), webElement.getText());
         }
 
         for (Map.Entry<String, String> entry : elementUrlPair.entrySet()) {
-            driver.findElement(By.xpath("//a[text() = '" + entry.getValue() + "']")).click();
+            getDriver().findElement(By.xpath("//a[text() = '" + entry.getValue() + "']")).click();
 
-            assertEquals(baseUrl + entry.getKey(), driver.getCurrentUrl());
+            assertEquals(baseUrl + entry.getKey(), getDriver().getCurrentUrl());
             if (entry.getValue().equals("Navigation")) {
                 assertEquals(entry.getValue() + " example",
-                        driver.findElement(By.xpath("//h1[@class='display-6']")).getText());
+                        getDriver().findElement(By.xpath("//h1[@class='display-6']")).getText());
             } else if (entry.getValue().equals("Draw in canvas")) {
-                assertEquals("Drawing in canvas", driver.findElement(By.xpath("//h1[@class='display-6']")).getText());
+                assertEquals("Drawing in canvas", getDriver().findElement(By.xpath("//h1[@class='display-6']")).getText());
             } else {
-                assertEquals(entry.getValue(), driver.findElement(By.xpath("//h1[@class='display-6']")).getText());
+                assertEquals(entry.getValue(), getDriver().findElement(By.xpath("//h1[@class='display-6']")).getText());
             }
-            driver.navigate().back();
+            getDriver().navigate().back();
         }
     }
 
@@ -66,19 +66,19 @@ public class ChaptersTest extends BaseTest {
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[" + parametrizedCount + "]";
         parametrizedCount++;
 
-        WebElement currentElement = driver.findElement(By.xpath(nextBtnLocator));
+        WebElement currentElement = getDriver().findElement(By.xpath(nextBtnLocator));
         String actualBtnName = currentElement.getText();
 
-        driver.findElement(By.xpath(nextBtnLocator)).click();
-        String actualUrl = driver.getCurrentUrl();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
+        String actualUrl = getDriver().getCurrentUrl();
         String headerLocator = "//h1[@class='display-6']";
 
         try {
-            String actualHead = driver.findElement(By.xpath(headerLocator)).getText();
+            String actualHead = getDriver().findElement(By.xpath(headerLocator)).getText();
             assertEquals(nameHead, actualHead);
         } catch (NoSuchElementException e) {
-            driver.switchTo().frame(driver.findElement(By.name("frame-header")));
-            String actualHead = driver.findElement(By.xpath(headerLocator)).getText();
+            getDriver().switchTo().frame(getDriver().findElement(By.name("frame-header")));
+            String actualHead = getDriver().findElement(By.xpath(headerLocator)).getText();
             assertEquals(nameHead, actualHead);
         }
 
@@ -90,7 +90,7 @@ public class ChaptersTest extends BaseTest {
     void longPageTest() {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[1]";
-        driver.findElement(By.xpath(nextBtnLocator)).click();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
         this.action
                 .sendKeys(Keys.SPACE)
                 .sendKeys(Keys.SPACE)
@@ -99,14 +99,14 @@ public class ChaptersTest extends BaseTest {
 
         this.wait2.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//footer")));
 
-        assertTrue(driver.findElement(By.xpath("//footer")).isDisplayed());
+        assertTrue(getDriver().findElement(By.xpath("//footer")).isDisplayed());
     }
 
     @Test
     void infinitePageTest() {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[2]";
-        driver.findElement(By.xpath(nextBtnLocator)).click();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
         action
                 .sendKeys(Keys.SPACE)
                 .sendKeys(Keys.SPACE)
@@ -115,18 +115,18 @@ public class ChaptersTest extends BaseTest {
 
         //waitFluent.until(ExpectedConditions.presenceOfElementLocated(By.className("text-muted")));
 
-        assertThrows(ElementClickInterceptedException.class, () -> driver.findElement(By.className("text-muted")).click());
+        assertThrows(ElementClickInterceptedException.class, () -> getDriver().findElement(By.className("text-muted")).click());
     }
 
     @Test
     void shadowDOMPageTest() {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[3]";
-        driver.findElement(By.xpath(nextBtnLocator)).click();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
 
-        assertThrows(NoSuchElementException.class, () -> driver.findElement(By.cssSelector("p")));
+        assertThrows(NoSuchElementException.class, () -> getDriver().findElement(By.cssSelector("p")));
 
-        WebElement shadowContent = driver.findElement(By.id("content"));
+        WebElement shadowContent = getDriver().findElement(By.id("content"));
         SearchContext shadowRoot = shadowContent.getShadowRoot();
         WebElement textElementFromShadow = shadowRoot.findElement(By.cssSelector("p"));
 
@@ -138,9 +138,9 @@ public class ChaptersTest extends BaseTest {
         String expectedCookiesList = "username=John Doe\ndate=10/07/2018";
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
-        driver.findElement(By.xpath(nextBtnLocator)).click();
-        driver.findElement(By.id("refresh-cookies")).click();
-        String cookiesList = driver.findElement(By.id("cookies-list")).getText();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
+        getDriver().findElement(By.id("refresh-cookies")).click();
+        String cookiesList = getDriver().findElement(By.id("cookies-list")).getText();
 
         assertEquals(expectedCookiesList, cookiesList);
     }
@@ -151,10 +151,10 @@ public class ChaptersTest extends BaseTest {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
 
-        driver.findElement(By.xpath(nextBtnLocator)).click();
-        driver.manage().addCookie(new Cookie("psina", "sutulaya"));
-        driver.findElement(By.id("refresh-cookies")).click();
-        String cookiesList = driver.findElement(By.id("cookies-list")).getText();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
+        getDriver().manage().addCookie(new Cookie("psina", "sutulaya"));
+        getDriver().findElement(By.id("refresh-cookies")).click();
+        String cookiesList = getDriver().findElement(By.id("cookies-list")).getText();
 
         assertEquals(expectedCookiesList, cookiesList);
     }
@@ -165,10 +165,10 @@ public class ChaptersTest extends BaseTest {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[4]";
 
-        driver.findElement(By.xpath(nextBtnLocator)).click();
-        driver.manage().deleteAllCookies();
-        driver.findElement(By.id("refresh-cookies")).click();
-        String cookiesList = driver.findElement(By.id("cookies-list")).getText();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
+        getDriver().manage().deleteAllCookies();
+        getDriver().findElement(By.id("refresh-cookies")).click();
+        String cookiesList = getDriver().findElement(By.id("cookies-list")).getText();
 
         assertEquals(expectedCookiesList, cookiesList);
     }
@@ -179,9 +179,9 @@ public class ChaptersTest extends BaseTest {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[5]";
 
-        driver.findElement(By.xpath(nextBtnLocator)).click();
-        driver.switchTo().frame("frame-body");
-        String actualParagraph = driver.findElement(By.xpath("//p[2]")).getText();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
+        getDriver().switchTo().frame("frame-body");
+        String actualParagraph = getDriver().findElement(By.xpath("//p[2]")).getText();
 
         assertEquals(expectedParagraph, actualParagraph);
     }
@@ -191,9 +191,9 @@ public class ChaptersTest extends BaseTest {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[5]";
 
-        driver.findElement(By.xpath(nextBtnLocator)).click();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
 
-        assertThrows(NoSuchElementException.class, () -> driver.findElement(By.xpath("//p[2]")));
+        assertThrows(NoSuchElementException.class, () -> getDriver().findElement(By.xpath("//p[2]")));
     }
 
     @Test
@@ -207,9 +207,9 @@ public class ChaptersTest extends BaseTest {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[6]";
 
-        driver.findElement(By.xpath(nextBtnLocator)).click();
-        driver.switchTo().frame("my-iframe");
-        String actualParagraph = driver.findElement(By.xpath("//p[3]")).getText();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
+        getDriver().switchTo().frame("my-iframe");
+        String actualParagraph = getDriver().findElement(By.xpath("//p[3]")).getText();
 
         assertEquals(expectedParagraph, actualParagraph);
     }
@@ -220,25 +220,25 @@ public class ChaptersTest extends BaseTest {
         String nextBtnLocator = "//div[@class='card-body']/h5[contains(@class, 'card-title') " +
                 "and text() = 'Chapter 4. Browser-Agnostic Features']/../a[7]";
 
-        driver.findElement(By.xpath(nextBtnLocator)).click();
-        driver.findElement(By.id("my-alert")).click();
-        driver.switchTo().alert().accept();
+        getDriver().findElement(By.xpath(nextBtnLocator)).click();
+        getDriver().findElement(By.id("my-alert")).click();
+        getDriver().switchTo().alert().accept();
 
-        driver.findElement(By.id("my-confirm")).click();
-        driver.switchTo().alert().accept();
-        driver.findElement(By.id("my-confirm")).click();
-        driver.switchTo().alert().dismiss();
+        getDriver().findElement(By.id("my-confirm")).click();
+        getDriver().switchTo().alert().accept();
+        getDriver().findElement(By.id("my-confirm")).click();
+        getDriver().switchTo().alert().dismiss();
 
-        driver.findElement(By.id("my-prompt")).click();
-        driver.switchTo().alert().sendKeys(expectedTypedText);
-        driver.switchTo().alert().accept();
-        String actualDisplayedText = driver.findElement(By.id("prompt-text")).getText();
+        getDriver().findElement(By.id("my-prompt")).click();
+        getDriver().switchTo().alert().sendKeys(expectedTypedText);
+        getDriver().switchTo().alert().accept();
+        String actualDisplayedText = getDriver().findElement(By.id("prompt-text")).getText();
 
-        driver.findElement(By.id("my-modal")).click();
-        driver.findElement(By.xpath("//button[@class='btn btn-primary model-button']")).click();
+        getDriver().findElement(By.id("my-modal")).click();
+        getDriver().findElement(By.xpath("//button[@class='btn btn-primary model-button']")).click();
 
         assertEquals("You typed: " + expectedTypedText, actualDisplayedText);
-        assertEquals("You chose: Save changes", driver.findElement(By.id("modal-text")).getText());
+        assertEquals("You chose: Save changes", getDriver().findElement(By.id("modal-text")).getText());
     }
 
 }
