@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id("io.qameta.allure") version "2.12.0"
+    id("io.freefair.lombok") version "8.13.1"
 }
 
 group = 'gavroleg'
@@ -8,6 +9,11 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+}
+
+ext {
+    lombokVersion = '1.18.38'
+    allureVersion = '2.29.1'
 }
 
 dependencies {
@@ -19,6 +25,11 @@ dependencies {
     implementation("org.aeonbits.owner:owner:1.0.12")
     implementation("com.codeborne:selenide:7.9.1")
     implementation("io.rest-assured:rest-assured:5.5.0")
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.0")
 }
 
 test {
